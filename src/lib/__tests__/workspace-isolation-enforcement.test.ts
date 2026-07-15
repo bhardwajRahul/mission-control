@@ -143,4 +143,19 @@ describe('direct session API coverage', () => {
       expect(source, file).toContain('denyUnscopedResourceForStrictWorkspace')
     }
   })
+
+  it('guards indirect global session consumers', () => {
+    const statusRoute = readFileSync(join(process.cwd(), 'src/app/api/status/route.ts'), 'utf8')
+    const chatRoute = readFileSync(join(process.cwd(), 'src/app/api/chat/messages/route.ts'), 'utf8')
+    const ptyRoute = readFileSync(join(process.cwd(), 'src/app/api/pty/attach/route.ts'), 'utf8')
+    const ptyWebSocket = readFileSync(join(process.cwd(), 'src/lib/pty-websocket.ts'), 'utf8')
+
+    expect(statusRoute).toContain("const includeGlobalRuntime = isolation === 'shared'")
+    expect(statusRoute).toContain('if (includeGlobalRuntime) {')
+    expect(chatRoute).toContain('const sessions = strictWorkspace ? [] : getAllGatewaySessions()')
+    expect(chatRoute).toContain('if (!strictWorkspace && !sessionKey)')
+    expect(chatRoute).toContain('if (strictWorkspace && !sessionKey)')
+    expect(ptyRoute).toContain("'terminal_sessions'")
+    expect(ptyWebSocket).toContain("'terminal_sessions'")
+  })
 })

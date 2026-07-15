@@ -10,6 +10,7 @@ export type UnscopedWorkspaceResource =
   | 'gateway_sessions'
   | 'session_transcripts'
   | 'session_preferences'
+  | 'terminal_sessions'
   | 'runtime_memory'
 
 interface IsolationRecord {
